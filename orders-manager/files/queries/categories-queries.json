@@ -1,0 +1,4 @@
+{
+    "getAll": "SELECT * FROM categories",
+    "getById": "SELECT * FROM categories c WHERE c.id = ?"
+}
