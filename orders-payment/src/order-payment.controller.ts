@@ -1,15 +1,19 @@
 import { Request, Response } from 'express'
-import { sleep } from './utils'
+import { PaymentService } from './payment.service'
 
 export class OrderPaymentController {
 
+    private paymentService: PaymentService
+
     constructor () {
-        this.payOrder = this.payOrder.bind(this)
+        this.getOrder = this.getOrder.bind(this)
+        this.paymentService = new PaymentService()
     }
 
-    async payOrder (req: Request, res: Response) {
-        await sleep(25000)
-        res.status(201).json({ message: 'order has been payed'})
+    async getOrder(req: Request, res: Response) {
+        const orderCode = req.params.orderCode
+        const payment = await this.paymentService.getPaymentByOrderCode(orderCode)
+        res.status(200).json(payment)
     }
     
 }

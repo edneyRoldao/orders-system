@@ -5,6 +5,6 @@ import { OrderPaymentController } from './order-payment.controller'
 const router: Router = express.Router()
 const controller = new OrderPaymentController()
 
-router.post('/pay', controller.payOrder)
+router.get('/payment/:orderCode', controller.getOrder)
 
 export default router
