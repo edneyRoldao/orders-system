@@ -8,11 +8,16 @@ import { AppUtils } from '../../utils/app.utils'
 import { CustomerService } from '../customer.service'
 import { OrderService } from '../order.service'
 import { Paged } from '../../dto/paged'
+import { MessagePublisher } from '../../config/messaging/message-publisher'
+import { OrderPayRequest } from '../../dto/order-pay-request.dto'
+import environment from '../../config/environments/environment'
 
 export class OrderServiceImpl implements OrderService {
 
     @Inject('orderRepo') private repository!: OrderRepository
     @Inject('customerSvc') private customerService!: CustomerService
+    @Inject('messagePublisher') private messagePublisher!: MessagePublisher
+
     private orderValidatorStrategy!: OrderValidatorStrategy
 
     constructor () {
@@ -64,5 +69,18 @@ export class OrderServiceImpl implements OrderService {
         const ordersPaged = new Paged<Order>(pageNumber, orders, totalItems)
         return ordersPaged
     }
+
+    async pay(orderPayRequest: OrderPayRequest): Promise<void> {
+        const order = await this.getByCode(orderPayRequest.code)
+
+        if (!order || !order.id) {
+            throw new Error('Order not found')
+        }
+
+        if (order.statusPayment === 'NOT_PAID') {
+            await this.messagePublisher.publish(orderPayRequest, environment.ORDER_PAYMENT_QUEUE)
+        }
+    }
+
 
 }
