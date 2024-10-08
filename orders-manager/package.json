@@ -29,6 +29,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mysql2": "^3.10.3",
+    "rabbitmq-client": "^5.0.0",
     "typescript": "^5.5.3"
   }
 }

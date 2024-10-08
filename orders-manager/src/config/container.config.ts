@@ -12,6 +12,7 @@ import { OrderValidatorProductImpl } from '../validators/impl/order-validator-pr
 import { OrderValidatorStockImpl } from '../validators/impl/order-validator-stock.impl'
 import { MongoAdapter } from './database/mongo-adapter'
 import { MySqlAdapter } from './database/mysql-adapter'
+import { RabbitMQAdapter } from './messaging/rabbitmq.adapter'
 
 export class Container {
 
@@ -26,22 +27,30 @@ export class Container {
     }
 
     register () {
+        // adapters
         this.dependencies['mysql'] = new MySqlAdapter()
         this.dependencies['mongo'] = new MongoAdapter()
-        this.dependencies['customerSvc'] = new CustomerServiceImpl()
-        this.dependencies['customerRepo'] = new CustomerRepositoryImpl()
-        this.dependencies['orderValCli'] = new OrderValidatorClientImpl()
-        this.dependencies['categoryRepo'] = new CategoryRepositoryImpl()
-        this.dependencies['productRepo'] = new ProductRepositoryImpl()
-        this.dependencies['productSvc'] = new ProductServiceImpl()
-        this.dependencies['orderRepo'] = new OrderRepositoryImpl()
+        this.dependencies['messagePublisher'] = new RabbitMQAdapter()
+
+        // services
         this.dependencies['orderSvc'] = new OrderServiceImpl()
+        this.dependencies['customerSvc'] = new CustomerServiceImpl()
+        this.dependencies['productSvc'] = new ProductServiceImpl()
+
+        // repositories
+        this.dependencies['orderRepo'] = new OrderRepositoryImpl()
+        this.dependencies['productRepo'] = new ProductRepositoryImpl()
+        this.dependencies['categoryRepo'] = new CategoryRepositoryImpl()
+        this.dependencies['customerRepo'] = new CustomerRepositoryImpl()
 
         // validators
         this.dependencies['orderValidatorStock'] = new OrderValidatorStockImpl()
         this.dependencies['orderValidatorCustomer'] = new OrderValidatorCustomerImpl()
         this.dependencies['orderValidatorProduct'] = new OrderValidatorProductImpl()
-        this.dependencies['orderValidatorPrice'] = new OrderValidatorPriceImpl()        
+        this.dependencies['orderValidatorPrice'] = new OrderValidatorPriceImpl()   
+        
+        // clients
+        this.dependencies['orderValCli'] = new OrderValidatorClientImpl()
     }
 
     getDependency (name: string) {

@@ -20,7 +20,10 @@
             "skipFiles": ["<node_internals>/**"],
             "program": "${workspaceFolder}/src/test.ts",
             "preLaunchTask": "tsc: build - tsconfig.json",
-            "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+            "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+            "env": {
+                "APP_ENV": "dev"
+            }
         },
     ]
 }

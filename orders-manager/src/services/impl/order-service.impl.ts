@@ -78,9 +78,8 @@ export class OrderServiceImpl implements OrderService {
         }
 
         if (order.statusPayment === 'NOT_PAID') {
-            await this.messagePublisher.publish(orderPayRequest, environment.ORDER_PAYMENT_QUEUE)
+            await this.messagePublisher.publish(orderPayRequest, environment.orderPaymentQueue.queue, environment.orderPaymentQueue.options)
         }
     }
-
 
 }
