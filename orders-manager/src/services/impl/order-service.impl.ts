@@ -71,15 +71,23 @@ export class OrderServiceImpl implements OrderService {
     }
 
     async pay(orderPayRequest: OrderPayRequest): Promise<void> {
-        const order = await this.getByCode(orderPayRequest.code)
+        const order = await this.getByCode(orderPayRequest.orderCode)
 
         if (!order || !order.id) {
             throw new Error('Order not found')
         }
 
         if (order.statusPayment === 'NOT_PAID') {
+            this.completePaymentInstrument(orderPayRequest, order)
+            console.log('PAYLOAD to be sent to RABBITMQ:', orderPayRequest)            
             await this.messagePublisher.publish(orderPayRequest, environment.orderPaymentQueue.queue, environment.orderPaymentQueue.options)
         }
+    }
+
+    completePaymentInstrument(orderPayRequest: OrderPayRequest, order: Order) {
+        orderPayRequest.amount = order.total || 0
+        orderPayRequest.clientDocument = order.customerDocument || ''
+        orderPayRequest.partnerId = environment.ORDER_PAYMENT_PARTNER_ID || ''
     }
 
 }

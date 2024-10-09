@@ -29,6 +29,7 @@ export class OrderRepositoryImpl extends Repository implements OrderRepository {
             created: resultSet[0]['created'],
             status: resultSet[0]['status'],
             statusPayment: resultSet[0]['status_payment'],
+            customerDocument: resultSet[0]['document'],
             total: resultSet.reduce((a, c) => a + parseFloat(c['total']), 0),
             items
         }

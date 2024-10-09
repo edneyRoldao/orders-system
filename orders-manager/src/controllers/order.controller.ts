@@ -52,6 +52,7 @@ export class OrderController {
         const orderPay = req.body
         try {
             await this.service.pay(orderPay)
+            res.status(200).json({ message: 'Payment request has been sent'})
 
         } catch (error: any) {
             const errors = JSON.parse(error.message)
