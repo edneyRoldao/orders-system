@@ -1,9 +1,10 @@
 import client, { Connection, Channel, ConsumeMessage } from 'amqplib'
 
 export class RabbitMQConnection {
-    channel?: Channel
-    connection?: Connection
-    private isConnected?: boolean
+
+    channel!: Channel
+    connection!: Connection
+    private isConnected!: boolean
 
     private readonly USER = 'admin'
     private readonly PASS = 'admin'
@@ -12,7 +13,6 @@ export class RabbitMQConnection {
     private readonly PROTOCOL = 'amqp'
 
     async connect (): Promise<void> {
-        // amqp://admin:admin@localhost:5672
         try {
             if (this.isConnected && !!this.channel) return
             console.log('Connecting to RabbitMQ Message Server')
@@ -29,18 +29,10 @@ export class RabbitMQConnection {
         }
     }
 
-    listen (queue: string): Promise<string> {
-        console.log('consuming messages...')
-        return new Promise(async (resolve, reject) => {
-            await this.channel?.assertQueue(queue, { durable: true })            
-            const callback = (msg: client.ConsumeMessage | null) => {
-                if (!msg) return reject('Invalid incoming message')
-                const message = msg.content.toString()
-                this.channel?.ack(msg)
-                resolve(message)
-            }
-            this.channel?.consume(queue, callback, { noAck: false })            
-        })
+    public async listen (queue: string, callback: (message: client.ConsumeMessage | null) => void): Promise<void> {
+        await this.channel?.assertQueue(queue, { durable: true })            
+        this.channel.consume(queue, callback, { noAck: false })
+        console.log(`>> RabbitMQConnection.listen << - start listening queue: ${queue}`)                    
     }
 
 }

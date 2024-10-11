@@ -1,14 +1,13 @@
 import { mongooseConnect } from './mongo.config'
 import { ExpressServerConfig } from './express-server.config'
-import orderPaymentListener from './message-listeners'
+import { MessageListenersRegistry } from './message-listeners.registry'
 
 mongooseConnect()
-const expressServer = new ExpressServerConfig()
 
-orderPaymentListener().then(r => {    
-})
+new MessageListenersRegistry()
+    .register()
 
-expressServer
+new ExpressServerConfig()
     .basicConfig()
     .routesRegistry()
     .startServer()
