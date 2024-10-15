@@ -36,10 +36,8 @@ export class ProductController {
             
             return res.status(404).json({ message: 'product not found'})
                 
-        } catch (error) {
-            
+        } catch (error) {            
         }
-
     }
 
     async activeProduct(req: Request, res: Response) {

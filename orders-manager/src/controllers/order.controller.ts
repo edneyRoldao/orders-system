@@ -13,6 +13,7 @@ export class OrderController {
         this.getByCode = this.getByCode.bind(this)
         this.getAll = this.getAll.bind(this)
         this.pay = this.pay.bind(this)
+        this.orderPaymentStatusWebhook = this.orderPaymentStatusWebhook.bind(this)
     }
 
     async create(req: Request, res: Response) {
@@ -58,6 +59,20 @@ export class OrderController {
             const errors = JSON.parse(error.message)
             res.status(400).json(errors)                        
         }
+    }
+
+    async orderPaymentStatusWebhook(req: Request, res: Response) {
+        // todo - verificar se o token foi assinado pelo provider de pagamento
+        const authHeader = req.headers.Authorization        
+        
+        // todo - recupera os dados de pagamento e salva no banco
+        const orderPayment = req.body
+        
+        console.log('####################################');
+        console.log('####################################');
+        console.log('webhook foi chamado', orderPayment);
+        
+        res.status(204).send()
     }
 
 }

@@ -1,3 +1,4 @@
+import { Cache } from '../../config/cache/cache'
 import { Inject } from '../../config/container.config'
 import { ProductResponseDTO } from '../../dto/product-response.dto'
 import { Category } from '../../models/category'
@@ -8,6 +9,7 @@ import { ProductService } from '../product.service'
 
 export class ProductServiceImpl implements ProductService {
 
+    @Inject('cache') cache!: Cache
     @Inject('productRepo') repository!: ProductRepository
     @Inject('categoryRepo') categoryRepository!: CategoryRepository 
 
@@ -28,6 +30,7 @@ export class ProductServiceImpl implements ProductService {
     }
 
     async createProduct(product: Product): Promise<void> {
+        await this.cache.evictCache('categories*')
         await this.repository.createProduct(product)
     }
 
@@ -46,7 +49,14 @@ export class ProductServiceImpl implements ProductService {
     }
     
     async getAllCategories(): Promise<Category[]> {
-        return await this.categoryRepository.getAll()
+        let categories = await this.cache.getCache<Category[]>('categories')
+
+        if (!categories) {
+            categories = await this.categoryRepository.getAll()
+            await this.cache.setCache('categories', categories, 180)
+        }
+
+        return categories
     }
 
     async getProductsByCodeIn(codes: string[]): Promise<ProductResponseDTO[]> {
@@ -62,7 +72,13 @@ export class ProductServiceImpl implements ProductService {
     }
 
     private async productToProductResponse (product: Product): Promise<ProductResponseDTO> {
-        const category: Category = await this.categoryRepository.getById(product.categoryId)
+        let category = await this.cache.getCache<Category>(`categories:${product.categoryId}`)
+
+        if (!category) {
+            category = await this.categoryRepository.getById(product.categoryId)
+            await this.cache.setCache(`categories:${product.categoryId}`, category, 180)
+        }
+
         return {
             id: product.id,
             code: product.code,

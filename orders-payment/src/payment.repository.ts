@@ -4,7 +4,7 @@ import { genereteUUISimple } from './utils'
 
 export class PaymentRepository {
 
-    async create(paymentDTO: PaymentDTO, paymentStatus: 'SUCCESS' | 'FAILED', paymentMessage: string = 'success'): Promise<void> {
+    async create(paymentDTO: PaymentDTO, paymentStatus: 'SUCCESS' | 'FAILED', paymentMessage: string = 'success'): Promise<any> {
         const transactionNumber = genereteUUISimple()
 
         const payment = new Payment({
@@ -20,10 +20,16 @@ export class PaymentRepository {
         })
 
         await payment.save()
+
+        return payment
     }
 
     async getByOrderCode(orderCode: string): Promise<any> {
         return await Payment.findOne({ orderCode })
+    }
+
+    async getByTransactionId(transactionNumber: string): Promise<any> {
+        return await Payment.findOne({ transactionNumber })
     }
 
 }

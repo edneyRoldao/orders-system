@@ -10,6 +10,7 @@ import { OrderValidatorCustomerImpl } from '../validators/impl/order-validator-c
 import { OrderValidatorPriceImpl } from '../validators/impl/order-validator-price.impl'
 import { OrderValidatorProductImpl } from '../validators/impl/order-validator-product.impl'
 import { OrderValidatorStockImpl } from '../validators/impl/order-validator-stock.impl'
+import { RedisCacheAdapter } from './cache/redis-cache.adapter'
 import { MongoAdapter } from './database/mongo-adapter'
 import { MySqlAdapter } from './database/mysql-adapter'
 import { RabbitMQAdapter } from './messaging/rabbitmq.adapter'
@@ -30,6 +31,7 @@ export class Container {
         // adapters
         this.dependencies['mysql'] = new MySqlAdapter()
         this.dependencies['mongo'] = new MongoAdapter()
+        this.dependencies['cache'] = new RedisCacheAdapter()
         this.dependencies['messagePublisher'] = new RabbitMQAdapter()
 
         // services
