@@ -30,7 +30,9 @@ export class ProductServiceImpl implements ProductService {
     }
 
     async createProduct(product: Product): Promise<void> {
-        await this.cache.evictCache('categories*')
+        await this.cache.evictCacheInBatch('categories*')
+        console.log('evict called');
+        
         await this.repository.createProduct(product)
     }
 
@@ -53,7 +55,7 @@ export class ProductServiceImpl implements ProductService {
 
         if (!categories) {
             categories = await this.categoryRepository.getAll()
-            await this.cache.setCache('categories', categories, 180)
+            await this.cache.setCache('categories', categories, 500)
         }
 
         return categories
@@ -76,7 +78,7 @@ export class ProductServiceImpl implements ProductService {
 
         if (!category) {
             category = await this.categoryRepository.getById(product.categoryId)
-            await this.cache.setCache(`categories:${product.categoryId}`, category, 180)
+            await this.cache.setCache(`categories:${product.categoryId}`, category, 500)
         }
 
         return {
