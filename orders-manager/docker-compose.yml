@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  orders-manager:
+    container_name: ordersManagerApp
+    build: .
+    ports:
+      - "4200:3000"
+       
